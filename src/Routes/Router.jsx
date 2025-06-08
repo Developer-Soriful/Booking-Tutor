@@ -8,6 +8,7 @@ import AddTutors from "../pages/AddTutors";
 import MyBookedTutors from "../pages/MyBookedTutors";
 import MyTutorials from "../pages/MyTutorials";
 import ProtectedRoute from "./ProtectedRoute";
+import Profile from "../pages/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -55,6 +56,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <MyBookedTutors />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         ),
       },

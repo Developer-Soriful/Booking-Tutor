@@ -1,10 +1,9 @@
-import { useContext } from "react";
 import { Link } from "react-router";
-import { AuthContext } from "../Auth/AuthProvider";
 import { Tooltip } from "react-tooltip";
+import UseAuth from "../Auth/UseAuth";
 
 const Header = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = UseAuth();
   return (
     <div className="flex justify-between items-center p-4 bg-blue-500 text-white">
       <div className="flex items-center gap-2">
@@ -26,6 +25,7 @@ const Header = () => {
         {user ? (
           <div className="flex items-center gap-4">
             <Link
+              to={`/profile`}
               data-tooltip-id="my-tooltip"
               data-tooltip-content={`${user.displayName || "User"}`}
               data-tooltip-place="bottom"
