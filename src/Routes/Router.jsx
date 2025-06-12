@@ -1,19 +1,23 @@
 import { createBrowserRouter } from "react-router";
 import MainLayouts from "../layouts/MainLayouts";
-import Home from "../layouts/Home";
+// import Home from "../layouts/Home";
 import Login from "../pages/Login";
 import SignUp from "../pages/SignUp";
-import FindTutors from "../pages/FindTutors";
-import AddTutors from "../pages/AddTutors";
-import MyBookedTutors from "../pages/MyBookedTutors";
-import MyTutorials from "../pages/MyTutorials";
 import ProtectedRoute from "./ProtectedRoute";
-import Profile from "../pages/Profile";
-
+import ErrorPage from "../components/ErrorPage";
+import React from "react";
+const Home = React.lazy(() => import("../layouts/Home"));
+const AddTutors = React.lazy(() => import("../pages/AddTutors"));
+const FindTutors = React.lazy(() => import("../pages/FindTutors"));
+const MyBookedTutors = React.lazy(() => import("../pages/MyBookedTutors"));
+const MyTutorials = React.lazy(() => import("../pages/MyTutorials"));
+const TutorDetails = React.lazy(() => import("../pages/TutorDetails"));
+const Profile = React.lazy(() => import("../pages/Profile"));
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayouts />,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
@@ -22,6 +26,7 @@ export const router = createBrowserRouter([
             <Home />
           </ProtectedRoute>
         ),
+        loader: () => fetch("http://localhost:3000/language_categories"),
       },
       {
         path: "login",
@@ -34,7 +39,16 @@ export const router = createBrowserRouter([
       {
         path: "/findTutors",
         element: <FindTutors />,
+        loader: () =>
+          fetch(`http://localhost:3000/allTutors`).then((res) => res.json()),
       },
+      {
+        path: "/findTutors/:language",
+        element: <FindTutors />,
+        loader: () =>
+          fetch(`http://localhost:3000/allTutors`).then((res) => res.json()),
+      },
+
       {
         path: "/addTutorials",
         element: (
@@ -66,6 +80,18 @@ export const router = createBrowserRouter([
             <Profile />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "/tutorDetails/:id",
+        element: (
+          <ProtectedRoute>
+            <TutorDetails />
+          </ProtectedRoute>
+        ),
+        loader: ({ params }) =>
+          fetch(`http://localhost:3000/tutorDetails/${params.id}`).then((res) =>
+            res.json()
+          ),
       },
     ],
   },

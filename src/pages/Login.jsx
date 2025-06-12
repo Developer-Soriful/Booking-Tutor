@@ -1,9 +1,12 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../Auth/AuthProvider";
 import { useNavigate } from "react-router";
+import { FaGoogle } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const Login = () => {
-  const { loginUser } = useContext(AuthContext);
+  const { loginUser, googleLogin } = useContext(AuthContext);
+  const [errorMsg, setErrorMsg] = useState(null);
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -12,10 +15,35 @@ const Login = () => {
     loginUser(email, password)
       .then(() => {
         navigate("/");
-        alert("Login successful!");
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Your work has been saved",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       })
       .catch((error) => {
-        console.error("Error logging in:", error);
+        console.error(error);
+        setErrorMsg(error.message);
+      });
+  };
+  // this is for google login
+  const handleGoogleLogin = () => {
+    googleLogin()
+      .then(() => {
+        navigate("/");
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Your work has been saved",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      })
+      .catch((err) => {
+        console.error(err.message);
+        setErrorMsg(err.message);
       });
   };
   return (
@@ -28,6 +56,15 @@ const Login = () => {
         onSubmit={handleSubmit}
         className="fieldset w-96 p-6 bg-base-200 rounded-lg shadow-lg"
       >
+        <span
+          onClick={handleGoogleLogin}
+          className=" flex items-center justify-center gap-2 btn btn-neutral mb-4"
+        >
+          sign in with Google
+          <span className="ml-2">
+            <FaGoogle size={15} />
+          </span>
+        </span>
         <label className="label">Email</label>
         <input
           type="email"
@@ -48,6 +85,7 @@ const Login = () => {
         <button type="submit" className="btn btn-neutral mt-4">
           Login
         </button>
+        {errorMsg && <p className="text-red-500 text-center">{errorMsg}</p>}
         <hr className="my-4" />
         <p className="text-center text-sm flex items-center justify-center gap-1">
           Don't have an account?

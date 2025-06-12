@@ -4,6 +4,8 @@ import UseAuth from "../Auth/UseAuth";
 
 const Header = () => {
   const { user } = UseAuth();
+
+  
   return (
     <div className="flex justify-between items-center p-4 bg-blue-500 text-white">
       <div className="flex items-center gap-2">
