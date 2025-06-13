@@ -5,6 +5,7 @@ import UseAuth from "../Auth/UseAuth";
 
 const AddTutors = () => {
   const { user } = UseAuth();
+  // this is for firebase sdk
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();

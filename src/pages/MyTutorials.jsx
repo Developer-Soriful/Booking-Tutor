@@ -2,15 +2,31 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import UseAuth from "../Auth/UseAuth";
+import { getIdToken } from "firebase/auth";
 
 const MyTutorials = () => {
   const { user } = UseAuth();
   const [tutorials, setMyTutorials] = useState([]);
+  // this is for firebase sdk
+
   useEffect(() => {
-    fetch(`http://localhost:3000/myAddedTutorials?email=${user.email}`)
-      .then((res) => res.json())
-      .then((data) => setMyTutorials(data))
-      .catch((err) => console.log(err));
+    const fetchData = async () => {
+      const token = await getIdToken(user);
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/myAddedTutorials?email=${user.email}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setMyTutorials(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
   }, []);
 
   const handleDelete = (id) => {
@@ -36,10 +52,18 @@ const MyTutorials = () => {
        <p>userName : ${user.displayName} </p>
        <p>userEmail : ${user.email} </p>
        <p>⭐ : ${selected.rating || 0} </p>
-      <input id="swal-image" class="swal2-input" placeholder="Image" value="${selected.image}">
-      <input id="swal-language" class="swal2-input" placeholder="Language" value="${selected.language}">
-      <input id="swal-price" class="swal2-input" placeholder="Price" type="number" value="${selected.price}">
-      <textarea id="swal-description" class="swal2-textarea" placeholder="Description">${selected.description}</textarea>
+      <input id="swal-image" class="swal2-input" placeholder="Image" value="${
+        selected.image
+      }">
+      <input id="swal-language" class="swal2-input" placeholder="Language" value="${
+        selected.language
+      }">
+      <input id="swal-price" class="swal2-input" placeholder="Price" type="number" value="${
+        selected.price
+      }">
+      <textarea id="swal-description" class="swal2-textarea" placeholder="Description">${
+        selected.description
+      }</textarea>
       </div>
     `,
       focusConfirm: false,
