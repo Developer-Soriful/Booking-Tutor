@@ -1,8 +1,24 @@
+import { useEffect, useState } from "react";
 import { BsArrowRight } from "react-icons/bs";
 import { Link, useLoaderData } from "react-router";
+import UseAuth from "../Auth/UseAuth";
 
 const Home = () => {
   const languageCategories = useLoaderData();
+  const [allUser, setAllUser] = useState([]);
+  const [tutor, setTutor] = useState([]);
+  // const { user } = UseAuth();
+  useEffect(() => {
+    fetch(`http://localhost:3000/allFirebaseUsers`)
+      .then((res) => res.json())
+      .then((data) => setAllUser(data));
+  }, []);
+  useEffect(() => {
+    fetch(`http://localhost:3000/allTutors`)
+      .then((res) => res.json())
+      .then((data) => setTutor(data))
+      .catch((err) => console.log(err));
+  }, []);
   return (
     <div>
       {/* this section for banner part */}
@@ -99,6 +115,25 @@ const Home = () => {
                 ❯
               </a>
             </div>
+          </div>
+        </div>
+      </div>
+      {/* this is for tutor language and total users count ui  */}
+      <div className="m-8">
+        <div className="grid justify-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+          <div className="card bg-base-100 shadow-xl">
+            <p>Experienced Tutor</p>
+            <h1 className="text-5xl font-bold">{tutor.length}</h1>
+          </div>
+          <div className="card bg-base-100 shadow-xl">
+            <p>Total Language</p>
+            <h1 className="text-5xl font-bold">
+              {languageCategories.length}
+            </h1>{" "}
+          </div>
+          <div className="card bg-base-100 shadow-xl">
+            <p>Total User</p>
+            <h1 className="text-5xl font-bold">{allUser.length}</h1>{" "}
           </div>
         </div>
       </div>
