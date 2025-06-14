@@ -67,12 +67,12 @@ const MyBookedTutors = () => {
               key={loaderData._id}
               className="flex flex-col mt-5  justify-center items-center "
             >
-              <div className="  flex flex-col lg:flex-row  p-6 rounded-xl shadow-lg lg:w-2/3 border border-gray-300 ">
-                <div className="w-full lg:w-1/3 mr-6">
+              <div className=" w-[90%] flex flex-col lg:flex-row  p-6 rounded-xl shadow-lg lg:w-2/3 border border-gray-300 ">
+                <div className="w-full lg:w-1/3  h-[320px] mr-6">
                   <img
                     src={loaderData.image}
                     alt={loaderData.language}
-                    className="w-full  object-contain rounded-lg mb-6"
+                    className="w-full h-full object-cover rounded-lg mb-6"
                   />
                 </div>
                 <div className="w-full lg:w-2/3 flex flex-col justify-between">

@@ -3,7 +3,7 @@ import { Link } from "react-router";
 const TutorCard = ({ tutors }) => {
   return (
     <div className="border-b-amber-300 border-r-red-600 border-l-green-600 border-t-blue-600 border-2 p-4 rounded-md shadow-md flex flex-col lg:flex-row justify-center items-center w-full gap-6 pr-2 overflow-hidden">
-      <div className="w-full lg:w-1/4">
+      <div className="w-full  lg:w-1/4">
         <img
           src={tutors.image}
           alt={tutors.userName}
