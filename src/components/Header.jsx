@@ -1,12 +1,12 @@
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 import { Tooltip } from "react-tooltip";
 import UseAuth from "../Auth/UseAuth";
 
 const Header = () => {
   const { user } = UseAuth();
- 
+
   return (
-    <div className="flex justify-between items-center p-4 bg-blue-500 text-white">
+    <div className="flex justify-between items-center  p-4">
       <div className="flex items-center gap-2">
         <img
           className="w-[50px] h-[50px] rounded-full p-1 border"
@@ -16,11 +16,41 @@ const Header = () => {
         <h1>Tutor Booking</h1>
       </div>
       <nav className="flex gap-4">
-        <Link to={`/`}>Home</Link>
-        <Link to={`/findTutors`}>Find tutors</Link>
-        <Link to={`/addTutorials`}>Add Tutorials</Link>
-        <Link to={`/myTutorials`}>My Tutorials</Link>
-        <Link to={`/myBookedTutors`}>My booked tutors</Link>
+        <NavLink to="/">
+          {({ isActive }) => (
+            <span className={isActive ? "underline text-blue-600" : ""}>
+              Home
+            </span>
+          )}
+        </NavLink>
+        <NavLink to="/findTutors">
+          {({ isActive }) => (
+            <span className={isActive ? "underline text-blue-600" : ""}>
+              Find tutors
+            </span>
+          )}
+        </NavLink>
+        <NavLink to="/addTutorials">
+          {({ isActive }) => (
+            <span className={isActive ? "underline text-blue-600" : ""}>
+              Add Tutorials
+            </span>
+          )}
+        </NavLink>
+        <NavLink to="/myTutorials">
+          {({ isActive }) => (
+            <span className={isActive ? "underline text-blue-600" : ""}>
+              My Tutorials
+            </span>
+          )}
+        </NavLink>
+        <NavLink to="/myBookedTutors">
+          {({ isActive }) => (
+            <span className={isActive ? "underline text-blue-600" : ""}>
+              My booked tutors
+            </span>
+          )}
+        </NavLink>
       </nav>
       <div>
         {user ? (

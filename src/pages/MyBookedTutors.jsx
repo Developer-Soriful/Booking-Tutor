@@ -29,6 +29,7 @@ const MyBookedTutors = () => {
         console.log(err);
       }
     };
+    fetchData();
   }, []);
   // this is for handleReview
   const handleReview = (id) => {
@@ -66,15 +67,15 @@ const MyBookedTutors = () => {
               key={loaderData._id}
               className="flex flex-col mt-5  justify-center items-center "
             >
-              <div className="  flex  p-6 rounded-xl shadow-lg lg:w-2/3 border border-gray-300 ">
-                <div className="w-1/3 mr-6">
+              <div className="  flex flex-col lg:flex-row  p-6 rounded-xl shadow-lg lg:w-2/3 border border-gray-300 ">
+                <div className="w-full lg:w-1/3 mr-6">
                   <img
                     src={loaderData.image}
                     alt={loaderData.language}
-                    className="w-full h-64 object-contain rounded-lg mb-6"
+                    className="w-full  object-contain rounded-lg mb-6"
                   />
                 </div>
-                <div className="w-2/3 flex flex-col justify-between">
+                <div className="w-full lg:w-2/3 flex flex-col justify-between">
                   <h2 className="text-3xl font-bold  mb-2">
                     {loaderData.language}
                   </h2>

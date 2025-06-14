@@ -6,8 +6,6 @@ import SignUp from "../pages/SignUp";
 import ProtectedRoute from "./ProtectedRoute";
 import ErrorPage from "../components/ErrorPage";
 import React from "react";
-import UseAuth from "../Auth/UseAuth";
-import { getIdToken } from "firebase/auth";
 const Home = React.lazy(() => import("../layouts/Home"));
 const AddTutors = React.lazy(() => import("../pages/AddTutors"));
 const FindTutors = React.lazy(() => import("../pages/FindTutors"));

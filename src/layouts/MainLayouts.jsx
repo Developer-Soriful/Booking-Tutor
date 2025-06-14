@@ -1,13 +1,10 @@
-import { Outlet } from "react-router";
+import { Outlet, useLoaderData } from "react-router";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import React, { Suspense } from "react";
 import Loading from "../components/Loading";
-import UseAuth from "../Auth/UseAuth";
 
 const MainLayouts = () => {
-  const { user } = UseAuth();
-
   return (
     <div>
       <header>

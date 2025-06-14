@@ -7,9 +7,11 @@ import { getIdToken } from "firebase/auth";
 
 const Home = () => {
   const languageCategories = useLoaderData();
+  const [totalReviews, setTotalReviews] = useState([]);
   const [allUser, setAllUser] = useState([]);
   const [tutor, setTutor] = useState([]);
   const { user } = UseAuth();
+
   useEffect(() => {
     fetch(`https://a01-server.vercel.app/allFirebaseUsers`)
       .then((res) => res.json())
@@ -25,6 +27,11 @@ const Home = () => {
           },
         });
         if (res.data) {
+          const totalReviews = res.data.reduce(
+            (acc, curr) => acc + (curr.reviewCount || 0),
+            0
+          );
+          setTotalReviews(totalReviews);
           setTutor(res.data);
         } else {
           console.log("token is not verified");
@@ -51,7 +58,7 @@ const Home = () => {
             <div className="absolute left-5 right-5 top-1/2 flex justify-between transform -translate-y-1/2">
               <a
                 href="#slide4"
-                className="btn btn-circle bg-white/80 hover:bg-white text-black border-none"
+                className="btn btn-circle /80 hover:bg-white text-black border-none"
               >
                 ❮
               </a>
@@ -136,10 +143,14 @@ const Home = () => {
       </div>
       {/* this is for tutor language and total users count ui  */}
       <div className="m-8">
-        <div className="grid justify-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        <div className="grid justify-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
           <div className="card bg-base-100 shadow-xl">
             <p>Experienced Tutor</p>
             <h1 className="text-5xl font-bold">{tutor.length}</h1>
+          </div>
+          <div className="card bg-base-100 shadow-xl">
+            <p>Total ReviewCount</p>
+            <h1 className="text-5xl font-bold">{totalReviews}</h1>
           </div>
           <div className="card bg-base-100 shadow-xl">
             <p>Total Language</p>
@@ -171,6 +182,80 @@ const Home = () => {
           </Link>
         ))}
       </div>
+      <section className="py-16  " id="how-i-learn">
+        <div className="max-w-4xl border p-4 mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4">How I Learn</h2>
+          <p className=" mb-8">
+            I follow a disciplined, hands-on learning strategy focused on
+            building real projects and improving daily.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6  rounded-xl shadow hover:shadow-md transition">
+              <h3 className="text-xl font-semibold mb-2">Learn by Doing</h3>
+              <p className="text-gray-500">
+                I build real-world projects while learning, ensuring practical
+                skill development.
+              </p>
+            </div>
+            <div className="p-6  rounded-xl shadow hover:shadow-md transition">
+              <h3 className="text-xl font-semibold mb-2">Daily Practice</h3>
+              <p className="text-gray-500">
+                I dedicate at least 4–6 hours daily to structured practice and
+                hands-on coding.
+              </p>
+            </div>
+            <div className="p-6  rounded-xl shadow hover:shadow-md transition">
+              <h3 className="text-xl font-semibold mb-2">Problem Solving</h3>
+              <p className="text-gray-500">
+                I focus on debugging, improving logic, and learning from
+                mistakes to grow faster.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="py-16 " id="tech-stack">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-6">Tech Stack Experience</h2>
+          <p className=" mb-8">
+            Technologies I've worked with in various projects.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left ">
+            <div>
+              <h4 className="font-semibold text-lg">Frontend</h4>
+              <ul className=" list-disc list-inside">
+                <li>React.js</li>
+                <li>Tailwind CSS</li>
+                <li>Framer Motion</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-lg">Backend</h4>
+              <ul className=" list-disc list-inside">
+                <li>Node.js</li>
+                <li>Express.js</li>
+                <li>MongoDB</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-lg">Auth & Tools</h4>
+              <ul className=" list-disc list-inside">
+                <li>Firebase Auth</li>
+                <li>JWT</li>
+                <li>Axios</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-lg">Others</h4>
+              <ul className=" list-disc list-inside">
+                <li>Git & GitHub</li>
+                <li>Vercel</li>
+                <li>Netlify</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
