@@ -6,6 +6,8 @@ import SignUp from "../pages/SignUp";
 import ProtectedRoute from "./ProtectedRoute";
 import ErrorPage from "../components/ErrorPage";
 import React from "react";
+import UseAuth from "../Auth/UseAuth";
+import { getIdToken } from "firebase/auth";
 const Home = React.lazy(() => import("../layouts/Home"));
 const AddTutors = React.lazy(() => import("../pages/AddTutors"));
 const FindTutors = React.lazy(() => import("../pages/FindTutors"));
@@ -13,6 +15,7 @@ const MyBookedTutors = React.lazy(() => import("../pages/MyBookedTutors"));
 const MyTutorials = React.lazy(() => import("../pages/MyTutorials"));
 const TutorDetails = React.lazy(() => import("../pages/TutorDetails"));
 const Profile = React.lazy(() => import("../pages/Profile"));
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -39,8 +42,6 @@ export const router = createBrowserRouter([
       {
         path: "/findTutors",
         element: <FindTutors />,
-        loader: () =>
-          fetch(`http://localhost:3000/allTutors`).then((res) => res.json()),
       },
       {
         path: "/findTutors/:language",

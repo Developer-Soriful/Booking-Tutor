@@ -23,13 +23,7 @@ const SignUp = () => {
         updateProfile(user, {
           displayName: name,
           photoURL: photoUrl,
-        })
-          .then(() => {
-            console.log("User profile updated successfully", user);
-          })
-          .catch((error) => {
-            console.error("Error updating user profile:", error);
-          });
+        });
       })
       .then(() => {
         Swal.fire({

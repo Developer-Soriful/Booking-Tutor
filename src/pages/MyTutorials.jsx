@@ -21,7 +21,13 @@ const MyTutorials = () => {
             },
           }
         );
-        setMyTutorials(res.data);
+        if (res.data) {
+          console.log("token is verified");
+
+          setMyTutorials(res.data);
+        } else {
+          console.log("token is not verified..");
+        }
       } catch (err) {
         console.log(err);
       }

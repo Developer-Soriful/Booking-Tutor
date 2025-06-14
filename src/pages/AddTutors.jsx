@@ -2,12 +2,14 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import UseAuth from "../Auth/UseAuth";
+import { useEffect } from "react";
+import { getIdToken } from "firebase/auth";
 
 const AddTutors = () => {
-  const { user } = UseAuth();
   // this is for firebase sdk
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
+  const { user } = UseAuth();
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
@@ -15,20 +17,33 @@ const AddTutors = () => {
     tutorialData.email = user?.email;
     tutorialData.userName = user?.displayName;
     tutorialData.reviewCount = 0;
-    axios
-      .post(`http://localhost:3000/addTutor`, tutorialData)
-      .then((response) => {
-        if (response.data.insertedId) {
-          navigate(`/findTutors/${tutorialData.language}`);
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "Your work has been saved",
-            showConfirmButton: false,
-            timer: 1500,
-          });
+    try {
+      const token = await getIdToken(user);
+
+      const res = await axios.post(
+        `http://localhost:3000/addTutor`,
+        tutorialData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
+      if (res.data) {
+        navigate(`/findTutors/${tutorialData.language}`);
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Your work has been saved",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        console.log("failed");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <div className="max-w-xl mx-auto shadow-md p-6 rounded-xl ">

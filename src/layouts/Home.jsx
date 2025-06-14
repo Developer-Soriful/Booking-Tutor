@@ -2,23 +2,39 @@ import { useEffect, useState } from "react";
 import { BsArrowRight } from "react-icons/bs";
 import { Link, useLoaderData } from "react-router";
 import UseAuth from "../Auth/UseAuth";
+import axios from "axios";
+import { getIdToken } from "firebase/auth";
 
 const Home = () => {
   const languageCategories = useLoaderData();
   const [allUser, setAllUser] = useState([]);
   const [tutor, setTutor] = useState([]);
-  // const { user } = UseAuth();
+  const { user } = UseAuth();
   useEffect(() => {
     fetch(`http://localhost:3000/allFirebaseUsers`)
       .then((res) => res.json())
       .then((data) => setAllUser(data));
   }, []);
   useEffect(() => {
-    fetch(`http://localhost:3000/allTutors`)
-      .then((res) => res.json())
-      .then((data) => setTutor(data))
-      .catch((err) => console.log(err));
-  }, []);
+    const fetchData = async () => {
+      const token = await getIdToken(user);
+      try {
+        const res = await axios.get(`http://localhost:3000/allTutors`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (res.data) {
+          setTutor(res.data);
+        } else {
+          console.log("token is not verified");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, [user]);
   return (
     <div>
       {/* this section for banner part */}
