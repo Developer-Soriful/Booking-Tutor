@@ -2,12 +2,39 @@ import { Link, useLoaderData, useParams } from "react-router";
 import UseAuth from "../Auth/UseAuth";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useEffect, useState } from "react";
+import { getIdToken } from "firebase/auth";
 
 const TutorDetails = () => {
   const { user } = UseAuth();
-  const tutor = useLoaderData();
+  // const tutor = useLoaderData();
+  const [tutor, setTutor] = useState({});
+  const { id } = useParams();
   const { userName, description, image, price, language, email, reviewCount } =
     tutor;
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = await getIdToken(user);
+      try {
+        const res = await axios.get(
+          `https://a01-server.vercel.app/tutorDetails/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res) {
+          setTutor(res.data);
+        } else {
+          console.log(`token verified error`);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [user]);
   const handleBookNow = () => {
     const bookingDetails = {
       userName: userName,
@@ -22,7 +49,7 @@ const TutorDetails = () => {
       selfImage: user?.photoURL,
     };
     axios
-      .post("http://localhost:3000/bookTutor", bookingDetails)
+      .post("https://a01-server.vercel.app/bookTutor", bookingDetails)
       .then((res) => {
         if (res.data.insertedId) {
           Swal.fire({

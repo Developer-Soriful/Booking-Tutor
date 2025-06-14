@@ -11,7 +11,7 @@ const Home = () => {
   const [tutor, setTutor] = useState([]);
   const { user } = UseAuth();
   useEffect(() => {
-    fetch(`http://localhost:3000/allFirebaseUsers`)
+    fetch(`https://a01-server.vercel.app/allFirebaseUsers`)
       .then((res) => res.json())
       .then((data) => setAllUser(data));
   }, []);
@@ -19,7 +19,7 @@ const Home = () => {
     const fetchData = async () => {
       const token = await getIdToken(user);
       try {
-        const res = await axios.get(`http://localhost:3000/allTutors`, {
+        const res = await axios.get(`https://a01-server.vercel.app/allTutors`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

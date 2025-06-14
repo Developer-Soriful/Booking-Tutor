@@ -14,7 +14,7 @@ const MyTutorials = () => {
       const token = await getIdToken(user);
       try {
         const res = await axios.get(
-          `http://localhost:3000/myAddedTutorials?email=${user.email}`,
+          `https://a01-server.vercel.app/myAddedTutorials?email=${user.email}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -22,11 +22,7 @@ const MyTutorials = () => {
           }
         );
         if (res.data) {
-          console.log("token is verified");
-
           setMyTutorials(res.data);
-        } else {
-          console.log("token is not verified..");
         }
       } catch (err) {
         console.log(err);
@@ -36,7 +32,7 @@ const MyTutorials = () => {
   }, []);
 
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:3000/deleteTutorial/${id}`).then((res) => {
+    axios.delete(`https://a01-server.vercel.app/deleteTutorial/${id}`).then((res) => {
       Swal.fire({
         position: "center",
         icon: "success",
@@ -93,7 +89,7 @@ const MyTutorials = () => {
         };
 
         axios
-          .put(`http://localhost:3000/updateTutorialData/${id}`, updatedData)
+          .put(`https://a01-server.vercel.app/updateTutorialData/${id}`, updatedData)
           .then(() => {
             Swal.fire("Updated!", "Tutorial has been updated.", "success");
             // Refetch the tutorials or update state

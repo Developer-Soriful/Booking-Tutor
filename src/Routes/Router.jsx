@@ -29,7 +29,7 @@ export const router = createBrowserRouter([
             <Home />
           </ProtectedRoute>
         ),
-        loader: () => fetch("http://localhost:3000/language_categories"),
+        loader: () => fetch("https://a01-server.vercel.app/language_categories"),
       },
       {
         path: "login",
@@ -47,7 +47,7 @@ export const router = createBrowserRouter([
         path: "/findTutors/:language",
         element: <FindTutors />,
         loader: () =>
-          fetch(`http://localhost:3000/allTutors`).then((res) => res.json()),
+          fetch(`https://a01-server.vercel.app/allTutors`).then((res) => res.json()),
       },
 
       {
@@ -89,10 +89,6 @@ export const router = createBrowserRouter([
             <TutorDetails />
           </ProtectedRoute>
         ),
-        loader: ({ params }) =>
-          fetch(`http://localhost:3000/tutorDetails/${params.id}`).then((res) =>
-            res.json()
-          ),
       },
     ],
   },

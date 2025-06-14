@@ -2,27 +2,43 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import UseAuth from "../Auth/UseAuth";
 import Swal from "sweetalert2";
+import { getIdToken } from "firebase/auth";
 
 const MyBookedTutors = () => {
   const [bookedData, setBookedData] = useState([]);
   const { user } = UseAuth();
   useEffect(() => {
-    fetch(`http://localhost:3000/allBookings?email=${user.email}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setBookedData(data);
-      })
-      .catch((err) => console.log(err));
+    const fetchData = async () => {
+      const token = await getIdToken(user);
+      try {
+        const res = await axios.get(
+          `https://a01-server.vercel.app/allBookings?email=${user.email}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res) {
+          setBookedData(res.data);
+          console.log("verify successfully");
+        } else {
+          console.log("verify failed");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
   }, []);
   // this is for handleReview
   const handleReview = (id) => {
     axios
-      .patch(`http://localhost:3000/updateTutor/${id}`, {
+      .patch(`https://a01-server.vercel.app/updateTutor/${id}`, {
         userEmail: user?.email,
       })
       .then((res) => {
         if (res.data.modifiedCount > 0) {
-          fetch(`http://localhost:3000/allBookings?email=${user.email}`)
+          fetch(`https://a01-server.vercel.app/allBookings?email=${user.email}`)
             .then((res) => res.json())
             .then((data) => {
               setBookedData(data);

@@ -21,7 +21,7 @@ const AddTutors = () => {
       const token = await getIdToken(user);
 
       const res = await axios.post(
-        `http://localhost:3000/addTutor`,
+        `https://a01-server.vercel.app/addTutor`,
         tutorialData,
         {
           headers: {

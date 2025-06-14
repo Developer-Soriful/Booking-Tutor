@@ -17,16 +17,13 @@ const FindTutors = () => {
       if (!user) return <Loading />;
       const token = await getIdToken(user);
       try {
-        const res = await axios.get("http://localhost:3000/allTutors", {
+        const res = await axios.get("https://a01-server.vercel.app/allTutors", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         if (res.data) {
-          console.log(`token verified`);
           setAllTutorsLoad(res.data);
-        } else {
-          console.log(`token not verified`);
         }
       } catch (error) {
         console.log(error);
