@@ -38,7 +38,7 @@ const Header = () => {
       </div>
       {menu ? (
         <nav
-          className={`flex flex-col absolute top-[55px] z-10 gap-2 bg-blue-200 p-4 rounded-xl shadow-md lg:hidden w-[400px] mx-auto mt-4`}
+          className={`flex flex-col absolute top-[55px] z-10 gap-2 bg-blue-200 p-4 rounded-xl shadow-md lg:hidden w-[90%] mx-auto mt-4`}
         >
           {[
             { to: "/", label: "Home" },

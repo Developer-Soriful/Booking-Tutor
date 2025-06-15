@@ -12,29 +12,24 @@ const TutorCard = ({ tutors }) => {
       </div>
       <div className="w-full lg:w-3/4 flex flex-col gap-2">
         <h3 className="text-xl font-semibold">{tutors.userName}</h3>
-        <p className="text-gray-500 ">
+        <p className="">
           language:{" "}
-          <span className="text-white text-wrap max-w-full">
-            {tutors.language}
-          </span>
+          <span className="text-wrap max-w-full">{tutors.language}</span>
         </p>
-        <p className="text-gray-500 ">
-          Price: ${" "}
-          <span className="text-white text-wrap max-w-full">
-            {tutors.price}
-          </span>
+        <p className="">
+          Price: $ <span className=" text-wrap max-w-full">{tutors.price}</span>
         </p>
 
-        <p className="text-gray-500 ">{tutors.description}</p>
-        <p className="text-gray-500 ">
+        <p className="">{tutors.description}</p>
+        <p className="">
           ⭐:{" "}
-          <span className="text-white text-wrap max-w-full">
+          <span className=" text-wrap max-w-full">
             {tutors.reviewCount || 0}
           </span>{" "}
         </p>
         <div>
           <Link to={`/tutorDetails/${tutors._id}`}>
-            <button className="bg-red-500 px-4 py-1 rounded-md text-white mt-4 cursor-pointer">
+            <button className="bg-red-500 px-4 py-1 rounded-md  mt-4 cursor-pointer">
               view profile
             </button>
           </Link>
