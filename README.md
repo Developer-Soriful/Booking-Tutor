@@ -7,10 +7,6 @@ Welcome to **Language Exchange**, an online tutor booking platform where users c
 ## 🚀 Live Site
 🔗 [Live Website Link](https://assignment-11-19334.web.app)
 
-## 📂 GitHub Repositories
-- 🔧 [Client Side Repository](https://github.com/Programming-Hero-Web-Course4/b11a11-client-side-Developer-Soriful)
-- 🛠️ [Server Side Repository](https://github.com/Programming-Hero-Web-Course4/b11a11-server-side-Developer-Soriful)
-
 ---
 
 ## 🎯 Project Purpose
