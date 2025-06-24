@@ -158,11 +158,6 @@ All screens are optimized with proper spacing, alignment, and color contrast.
 
 ---
 
-## 📽️ Assignment Explanation Video
-🎥 [Watch Explanation Video](https://your-explanation-video-link.com)
-
----
-
 **Thank You! 😊**
 This project showcases your ability to create industry-level full-stack applications. Best of luck in your evaluation!
 
