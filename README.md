@@ -116,7 +116,7 @@ This project is part of **Assignment-11-assignment_category_14**. It evaluates y
 ## 💻 Responsive Design
 
 ✅ Mobile | ✅ Tablet | ✅ Desktop  
-All screens are optimized with proper spacing, alignment, and color contrast.
+All screens are optimized with proper spacing, alignment, and color contrast. fully done here
 
 ---
 
@@ -135,22 +135,6 @@ All screens are optimized with proper spacing, alignment, and color contrast.
 
 - ✅ Dark/Light Mode Toggle
 - ✅ Spinner on data loading
-- ✅ Framer Motion Animations *(if added)*
-- ✅ Extra Feature: [Mention here, e.g., Bookmark Tutors / Pagination / etc.]
-
----
-
-## ✅ Assignment Submission Checklist
-
-- [x] 15+ meaningful client commits
-- [x] 8+ meaningful server commits
-- [x] Proper README with all project details
-- [x] Fully responsive website
-- [x] Secure Firebase and MongoDB setup
-- [x] No errors on page reloads
-- [x] Deployed server and client with working routes
-- [x] JWT-based private route protection
-- [x] Eye-pleasing UI/UX
 
 ---
 
