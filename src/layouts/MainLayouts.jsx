@@ -6,16 +6,14 @@ import Loading from "../components/Loading";
 
 const MainLayouts = () => {
   return (
-    <div>
-      <header>
-        <Header />
-      </header>
-      <main style={{ minHeight: "calc(100vh - 134px)" }}>
+    <div className="min-h-screen bg-base-100 flex flex-col">
+      <Header />
+      <main className="w-11/12 mx-auto flex-1 pt-4" style={{ minHeight: "calc(100vh - 134px)" }}>
         <Suspense fallback={<Loading />}>
           <Outlet />
         </Suspense>
       </main>
-      <footer>
+      <footer className="mt-auto">
         <Footer />
       </footer>
     </div>
