@@ -39,14 +39,15 @@ const FindTutors = () => {
 
     setSearchLoading(true);
     try {
-      const token = await getIdToken(user);
+      let headers = {};
+      if (user) {
+        const token = await getIdToken(user);
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const res = await axios.get(
         `https://a01-server.vercel.app/searchTutors?language=${encodeURIComponent(searchTerm)}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers }
       );
       if (res.data) {
         setAllTutorsLoad(res.data);
@@ -64,11 +65,14 @@ const FindTutors = () => {
   const fetchAllTutors = async () => {
     setLoading(true);
     try {
-      const token = await getIdToken(user);
+      let headers = {};
+      if (user) {
+        const token = await getIdToken(user);
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const res = await axios.get("https://a01-server.vercel.app/allTutors", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers
       });
       if (res.data) {
         setAllTutorsLoad(res.data);
