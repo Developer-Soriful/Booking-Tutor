@@ -100,7 +100,7 @@ const FindTutors = () => {
     } else {
       // Load all tutors
       fetchAllTutors();
-    }
+    } 
   }, [language]);
 
   // Filter tutors based on language parameter (if no search is active)
