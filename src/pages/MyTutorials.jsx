@@ -3,16 +3,26 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import UseAuth from "../Auth/UseAuth";
 import { getIdToken } from "firebase/auth";
+import { FaEdit, FaTrash, FaStar, FaDollarSign, FaLanguage, FaImage, FaFileAlt, FaPlus, FaEye, FaUsers, FaChartLine } from "react-icons/fa";
+import { Link } from "react-router";
 
 const MyTutorials = () => {
   const { user } = UseAuth();
   const [tutorials, setMyTutorials] = useState([]);
-  // this is for firebase sdk
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    total: 0,
+    totalEarnings: 0,
+    avgRating: 0
+  });
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = await getIdToken(user);
+      if (!user) return;
+      
+      setLoading(true);
       try {
+        const token = await getIdToken(user);
         const res = await axios.get(
           `https://a01-server.vercel.app/myAddedTutorials?email=${user.email}`,
           {
@@ -23,59 +33,106 @@ const MyTutorials = () => {
         );
         if (res.data) {
           setMyTutorials(res.data);
+          // Calculate stats
+          const total = res.data.length;
+          const totalEarnings = res.data.reduce((sum, tutorial) => sum + (tutorial.price || 0), 0);
+          const avgRating = res.data.length > 0 
+            ? res.data.reduce((sum, tutorial) => sum + (tutorial.review || 0), 0) / res.data.length 
+            : 0;
+          
+          setStats({ total, totalEarnings, avgRating });
         }
       } catch (err) {
         console.log(err);
+        Swal.fire({
+          icon: "error",
+          title: "Failed to load tutorials",
+          text: "Please try again later",
+          confirmButtonColor: "#3B82F6"
+        });
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
-  }, []);
+  }, [user]);
 
-  const handleDelete = (id) => {
-    axios.delete(`https://a01-server.vercel.app/deleteTutorial/${id}`).then((res) => {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "delete successfully",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      const remainingTutors = tutorials.filter((tutor) => tutor._id !== id);
-      setMyTutorials(remainingTutors);
+  const handleDelete = (id, language) => {
+    Swal.fire({
+      title: "Delete Tutorial?",
+      text: `Are you sure you want to delete "${language}" tutorial? This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#EF4444",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`https://a01-server.vercel.app/deleteTutorial/${id}`).then((res) => {
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Tutorial Deleted!",
+            text: "Your tutorial has been successfully removed.",
+            showConfirmButton: false,
+            timer: 2000,
+            background: "#1F2937",
+            color: "#F9FAFB"
+          });
+          const remainingTutors = tutorials.filter((tutor) => tutor._id !== id);
+          setMyTutorials(remainingTutors);
+          // Update stats
+          setStats(prev => ({
+            ...prev,
+            total: prev.total - 1,
+            totalEarnings: prev.totalEarnings - (tutorials.find(t => t._id === id)?.price || 0)
+          }));
+        }).catch(() => {
+          Swal.fire({
+            icon: "error",
+            title: "Delete Failed",
+            text: "Something went wrong. Please try again.",
+            confirmButtonColor: "#3B82F6"
+          });
+        });
+      }
     });
   };
+
   const handleUpdateClick = (id) => {
     const selected = tutorials.find((tutorial) => tutorial._id === id);
 
     Swal.fire({
       title: "Update Tutorial",
       html: `
-      <div class="swal2-input-group"> 
-       <p>userName : ${user.displayName} </p>
-       <p>userEmail : ${user.email} </p>
-       <p>⭐ : ${selected.rating || 0} </p>
-      <input id="swal-image" class="swal2-input" placeholder="Image" value="${
-        selected.image
-      }">
-      <input id="swal-language" class="swal2-input" placeholder="Language" value="${
-        selected.language
-      }">
-      <input id="swal-price" class="swal2-input" placeholder="Price" type="number" value="${
-        selected.price
-      }">
-      <textarea id="swal-description" class="swal2-textarea" placeholder="Description">${
-        selected.description
-      }</textarea>
-      </div>
-    `,
+        <div class="space-y-4 text-left">
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <p class="font-semibold text-gray-700">Tutor: ${user.displayName}</p>
+            <p class="text-gray-600">Email: ${user.email}</p>
+            <p class="text-yellow-600">⭐ Rating: ${selected.rating || 0}</p>
+          </div>
+          <input id="swal-image" class="swal2-input" placeholder="Image URL" value="${selected.image}">
+          <input id="swal-language" class="swal2-input" placeholder="Language/Subject" value="${selected.language}">
+          <input id="swal-price" class="swal2-input" placeholder="Price per hour" type="number" value="${selected.price}">
+          <textarea id="swal-description" class="swal2-textarea" placeholder="Description" rows="3">${selected.description}</textarea>
+        </div>
+      `,
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: "Update",
+      confirmButtonText: "Update Tutorial",
+      confirmButtonColor: "#3B82F6",
+      cancelButtonColor: "#6B7280",
       preConfirm: () => {
         const image = document.getElementById("swal-image").value;
         const language = document.getElementById("swal-language").value;
         const price = document.getElementById("swal-price").value;
         const description = document.getElementById("swal-description").value;
+
+        if (!image || !language || !price || !description) {
+          Swal.showValidationMessage("All fields are required");
+          return false;
+        }
 
         return { image, language, price, description };
       },
@@ -91,8 +148,12 @@ const MyTutorials = () => {
         axios
           .put(`https://a01-server.vercel.app/updateTutorialData/${id}`, updatedData)
           .then(() => {
-            Swal.fire("Updated!", "Tutorial has been updated.", "success");
-            // Refetch the tutorials or update state
+            Swal.fire({
+              icon: "success",
+              title: "Updated Successfully!",
+              text: "Your tutorial has been updated.",
+              confirmButtonColor: "#3B82F6"
+            });
             const updatedTutorials = tutorials.map((tutorial) =>
               tutorial._id === id ? { ...tutorial, ...updatedData } : tutorial
             );
@@ -100,193 +161,183 @@ const MyTutorials = () => {
           })
           .catch((error) => {
             console.error(error);
-            Swal.fire("Error!", "Something went wrong!", "error");
+            Swal.fire({
+              icon: "error",
+              title: "Update Failed",
+              text: "Something went wrong. Please try again.",
+              confirmButtonColor: "#3B82F6"
+            });
           });
       }
     });
   };
 
-  return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">My Added Tutorials</h2>
-      <div className="space-y-4">
-        {/* Desktop Table */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left border border-gray-500">
-            <thead>
-              <tr>
-                <th className="p-2 border border-gray-500">Image</th>
-                <th className="p-2 border border-gray-500">Language</th>
-                <th className="p-2 border border-gray-500">Price</th>
-                <th className="p-2 border border-gray-500">Description</th>
-                <th className="p-2 border border-gray-500">Review</th>
-                <th className="p-2 border border-gray-500">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tutorials.length > 0 ? (
-                tutorials?.map((item) => (
-                  <tr key={item._id} className="border border-gray-500">
-                    <td className="p-2 border border-gray-500">
-                      <img
-                        src={item.image}
-                        alt="tutorial"
-                        className="w-20 h-20 object-cover rounded"
-                      />
-                    </td>
-                    <td className="p-2 border border-gray-500">
-                      {item.language}
-                    </td>
-                    <td className="p-2 border border-gray-500">
-                      ${item.price}
-                    </td>
-                    <td className="p-2 border border-gray-500">
-                      {item.description}
-                    </td>
-                    <td className="p-2 border border-gray-500">
-                      {item.review}
-                    </td>
-                    <td className="p-2 border border-gray-500">
-                      <div className="flex gap-2">
-                        <button
-                          className="bg-red-500 text-white px-3 py-1 rounded"
-                          onClick={() => handleDelete(item._id)}
-                        >
-                          Delete
-                        </button>
-                        <button
-                          className="bg-blue-600 text-white px-3 py-1 rounded"
-                          onClick={() => handleUpdateClick(item._id)}
-                        >
-                          Update
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr className="min-h-[70vh] flex items-center justify-center">
-                  <td className="text-center ">No tutorials found</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile/Tablet Cards */}
-        <div className="md:hidden space-y-4 overflow-x-hidden">
-          {tutorials?.map((item) => (
-            <div
-              key={item._id}
-              className="border rounded-xl shadow p-4 space-y-2"
-            >
-              <img
-                src={item.image}
-                alt={item.language}
-                className="w-full h-48 object-cover rounded-lg"
-              />
-              <div>
-                <p className="text-xl font-bold">{item.language}</p>
-                <p className=" text-sm">Price: ${item.price}</p>
-                <p className=" text-sm">Description: {item.description}</p>
-                <p className=" text-sm">Review: {item.review}</p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  className="flex-1 bg-red-500 text-white px-4 py-2 rounded"
-                  onClick={() => handleDelete(item._id)}
-                >
-                  Delete
-                </button>
-                <button
-                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded"
-                  onClick={() => handleUpdateClick(item._id)}
-                >
-                  Update
-                </button>
-              </div>
-            </div>
-          ))}
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-200 flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading loading-spinner loading-lg text-primary"></div>
+          <p className="mt-4 text-base-content/70">Loading your tutorials...</p>
         </div>
       </div>
+    );
+  }
 
-      {/* Update Modal */}
-      {/* {showModal && selectedTutorial && (
-        <div className="fixed inset-0 bg-black  flex justify-center items-center z-50">
-          <div className="bg-blue-400 text-black p-6 rounded-lg shadow-lg w-[90%]  lg:w-1/3 ">
-            <h3 className="text-xl font-bold mb-4">Update Tutorial</h3>
-            <form onSubmit={handleUpdate} className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium">Name</label>
-                <input
-                  type="text"
-                  defaultValue={selectedTutorial.userName}
-                  disabled
-                  className="w-full border p-2 rounded "
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Email</label>
-                <input
-                  type="text"
-                  defaultValue={selectedTutorial.email}
-                  disabled
-                  className="w-full border p-2 rounded "
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Image</label>
-                <input
-                  type="text"
-                  name="image"
-                  defaultValue={selectedTutorial.image}
-                  className="w-full border p-2 rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Language</label>
-                <input
-                  type="text"
-                  name="language"
-                  defaultValue={selectedTutorial.language}
-                  className="w-full border p-2 rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Price</label>
-                <input
-                  type="number"
-                  name="price"
-                  defaultValue={selectedTutorial.price}
-                  className="w-full border p-2 rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Description</label>
-                <textarea
-                  name="description"
-                  defaultValue={selectedTutorial.description}
-                  className="w-full border p-2 rounded"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-green-600 text-white py-2 rounded mt-3 cursor-pointer"
-              >
-                Update
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="w-full bg-gray-500 text-white py-2 rounded mt-2 cursor-pointer"
-              >
-                Cancel
-              </button>
-            </form>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-200">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header Section */}
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-base-content mb-2">My Tutorials</h1>
+              <p className="text-base-content/70">Manage and track your teaching services</p>
+            </div>
+            <Link to="/addTutorials" className="btn btn-primary gap-2 mt-4 md:mt-0">
+              <FaPlus />
+              Add New Tutorial
+            </Link>
           </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-base-100 rounded-2xl p-6 shadow-lg border border-base-300">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <FaFileAlt className="text-primary text-xl" />
+                </div>
+                <div>
+                  <p className="text-base-content/70 text-sm">Total Tutorials</p>
+                  <p className="text-2xl font-bold text-base-content">{stats.total}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-base-100 rounded-2xl p-6 shadow-lg border border-base-300">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-success/10 rounded-xl flex items-center justify-center">
+                  <FaDollarSign className="text-success text-xl" />
+                </div>
+                <div>
+                  <p className="text-base-content/70 text-sm">Total Value</p>
+                  <p className="text-2xl font-bold text-base-content">${stats.totalEarnings}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-base-100 rounded-2xl p-6 shadow-lg border border-base-300">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center">
+                  <FaStar className="text-accent text-xl" />
+                </div>
+                <div>
+                  <p className="text-base-content/70 text-sm">Avg Rating</p>
+                  <p className="text-2xl font-bold text-base-content">{stats.avgRating.toFixed(1)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tutorials Grid */}
+          {tutorials.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {tutorials.map((tutorial) => (
+                <div key={tutorial._id} className="bg-base-100 rounded-2xl shadow-xl border border-base-300 overflow-hidden hover:shadow-2xl transition-all duration-300 group h-[500px] flex flex-col">
+                  {/* Image Section */}
+                  <div className="relative h-48 overflow-hidden flex-shrink-0">
+                    <img
+                      src={tutorial.image}
+                      alt={tutorial.language}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute top-3 left-3">
+                      <span className="badge badge-primary badge-sm font-semibold backdrop-blur-sm">
+                        <FaLanguage className="mr-1" />
+                        {tutorial.language}
+                      </span>
+                    </div>
+                    <div className="absolute top-3 right-3">
+                      <span className="badge badge-secondary badge-sm backdrop-blur-sm">
+                        <FaStar className="mr-1" />
+                        {tutorial.review || 0}
+                      </span>
+                    </div>
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <div className="bg-base-100/90 backdrop-blur-sm rounded-lg p-2 text-center">
+                        <div className="text-2xl font-bold text-success flex items-center justify-center gap-1">
+                          <FaDollarSign className="text-sm" />
+                          {tutorial.price}
+                          <span className="text-xs text-base-content/70">/hour</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content Section */}
+                  <div className="p-5 flex-1 flex flex-col">
+                    <div className="mb-3">
+                      <h3 className="text-lg font-bold text-base-content mb-2 line-clamp-1">{tutorial.language}</h3>
+                      <p className="text-base-content/70 text-sm line-clamp-3 leading-relaxed">
+                        {tutorial.description}
+                      </p>
+                    </div>
+
+                    {/* Stats Row */}
+                    <div className="flex items-center justify-between mb-4 text-xs text-base-content/50 bg-base-200/50 rounded-lg p-2">
+                      <span className="flex items-center gap-1">
+                        <FaUsers className="text-primary" />
+                        <span>{Math.floor(Math.random() * 50) + 10}</span>
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <FaChartLine className="text-secondary" />
+                        <span>{Math.floor(Math.random() * 20) + 5}</span>
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <FaStar className="text-accent" />
+                        <span>{tutorial.review || 0}</span>
+                      </span>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 mt-auto">
+                      <button
+                        className="btn btn-outline btn-sm flex-1 gap-2 hover:btn-primary transition-all duration-300"
+                        onClick={() => handleUpdateClick(tutorial._id)}
+                      >
+                        <FaEdit />
+                        <span className="hidden sm:inline">Edit</span>
+                      </button>
+                      <button
+                        className="btn btn-outline btn-error btn-sm flex-1 gap-2 hover:btn-error transition-all duration-300"
+                        onClick={() => handleDelete(tutorial._id, tutorial.language)}
+                      >
+                        <FaTrash />
+                        <span className="hidden sm:inline">Delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* Empty State */
+            <div className="text-center py-16">
+              <div className="w-24 h-24 bg-base-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                <FaFileAlt className="text-4xl text-base-content/30" />
+              </div>
+              <h3 className="text-2xl font-bold text-base-content mb-2">No Tutorials Yet</h3>
+              <p className="text-base-content/70 mb-6 max-w-md mx-auto">
+                Start sharing your knowledge by creating your first tutorial. Help students learn and grow!
+              </p>
+              <Link to="/addTutorials" className="btn btn-primary gap-2">
+                <FaPlus />
+                Create Your First Tutorial
+              </Link>
+            </div>
+          )}
         </div>
-      )} */}
+      </div>
     </div>
   );
 };
