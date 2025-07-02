@@ -23,9 +23,7 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: (
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
+          <Home />
         ),
         loader: () => fetch("https://a01-server.vercel.app/language_categories"),
       },
@@ -75,9 +73,7 @@ export const router = createBrowserRouter([
       {
         path: "/profile",
         element: (
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
+          <Profile />
         ),
       },
       {
