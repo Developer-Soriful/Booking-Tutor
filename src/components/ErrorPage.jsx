@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import Header from "./Header";
 import Footer from "./Footer";
 // commit 1 
+// commit 2
 const ErrorPage = () => {
   return (
     <>
