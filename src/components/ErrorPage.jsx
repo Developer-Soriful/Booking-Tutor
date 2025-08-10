@@ -6,6 +6,7 @@ import Footer from "./Footer";
 // commit 3
 // commit 4
 // commit 5
+// commit 6
 const ErrorPage = () => {
   return (
     <>
