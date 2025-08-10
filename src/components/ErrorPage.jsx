@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import Header from "./Header";
 import Footer from "./Footer";
-
+// commit 1 
 const ErrorPage = () => {
   return (
     <>
